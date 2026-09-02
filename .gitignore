@@ -1,0 +1,60 @@
+# ============ SECRETS - NEVER COMMIT ============
+api/.env
+api/.env.*
+frontend/.env
+frontend/.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# ============ Node ============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ============ Build output ============
+frontend/dist/
+api/dist/
+*.tsbuildinfo
+
+# ============ Local data / databases ============
+api/data/
+api/*.db
+api/*.db-journal
+api/*.db-wal
+api/*.db-shm
+*.sqlite
+*.sqlite3
+
+# ============ Logs ============
+api/server.log
+api/dev.log
+frontend/dev.log
+*.log
+
+# ============ OS junk ============
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ============ Editors ============
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============ Coverage ============
+coverage/
+.nyc_output/
+
+# ============ Misc ============
+.vercel
+.turbo
+.cache/

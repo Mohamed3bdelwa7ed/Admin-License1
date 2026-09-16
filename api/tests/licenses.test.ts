@@ -166,4 +166,31 @@ describe("licenses (admin API)", () => {
     expect(res.body.items.length).toBeGreaterThanOrEqual(1);
     expect(res.body.items[0].type).toBe("license_created");
   });
+
+  it("permanently deletes a license with its devices and events", async () => {
+    const created = await http.post("/api/v1/licenses").set(headers).send(licenseBody({ email: "del@test.example" }));
+    const id = created.body.license.id as string;
+    const key = created.body.license.licenseKey as string;
+    await http.post("/api/v1/client/activate").send({ licenseKey: key, deviceId: "DEV-D-000001", nonce: "nonce-del-0001" });
+
+    const del = await http.delete(`/api/v1/licenses/${id}`).set(headers);
+    expect(del.status).toBe(200);
+    expect(del.body.deleted).toBe(true);
+
+    // license, devices and events are gone
+    expect((await http.get(`/api/v1/licenses/${id}`).set(headers)).status).toBe(404);
+    expect((await http.get(`/api/v1/licenses/${id}/devices`).set(headers)).status).toBe(404);
+
+    // the deleted key can never work again (fail closed, nothing to revoke/reactivate)
+    const act = await http.post("/api/v1/client/activate").send({ licenseKey: key, deviceId: "DEV-D-000002", nonce: "nonce-del-0002" });
+    expect(act.status).toBe(404);
+    expect(act.body.error.code).toBe("LICENSE_NOT_FOUND");
+    expect((await http.post(`/api/v1/licenses/${id}/revoke`).set(headers).send({})).status).toBe(404);
+    expect((await http.post(`/api/v1/licenses/${id}/reactivate`).set(headers)).status).toBe(404);
+  });
+
+  it("404s when deleting an unknown license", async () => {
+    const res = await http.delete("/api/v1/licenses/does-not-exist").set(headers);
+    expect(res.status).toBe(404);
+  });
 });

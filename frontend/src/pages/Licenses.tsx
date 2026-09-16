@@ -1,11 +1,13 @@
 import { Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { listLicenses, type LicenseListResult } from "../api";
+import { listLicenses, deleteLicense, type LicenseListResult } from "../api";
 import { LicenseStatusBadge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { Select } from "../components/forms";
+import { ConfirmDialog } from "../components/Modal";
 import { Pagination, Table, type Column } from "../components/Table";
+import { useToast } from "../components/Toast";
 import { PageHeader } from "../components/ui";
 import type { License } from "../types";
 import { formatDate } from "../utils/format";
@@ -14,6 +16,7 @@ import CreateLicenseModal from "./CreateLicenseModal";
 export default function Licenses() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const { push } = useToast();
   const [result, setResult] = useState<LicenseListResult | null>(null);
   const [loading, setLoading] = useState(true);
   // deep-linkable filters: /licenses?search=Acme and /licenses?expiring=30
@@ -23,6 +26,9 @@ export default function Licenses() {
   const [expiring, setExpiring] = useState<"any" | "30">(() => (params.get("expiring") === "30" ? "30" : "any"));
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<License | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [nonce, setNonce] = useState(0);
 
   // re-apply URL filters when navigating here with different params
   useEffect(() => {
@@ -46,11 +52,28 @@ export default function Licenses() {
       });
     }, 250);
     return () => clearTimeout(t);
-  }, [search, status, expiring, page]);
+  }, [search, status, expiring, page, nonce]);
 
   const onSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
+  };
+
+  const doDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteLicense(deleteTarget.id);
+      push("success", "License permanently deleted — its key will no longer work");
+      setDeleteTarget(null);
+      // step back if we just emptied the page, otherwise refetch in place
+      if (result && result.items.length <= 1 && page > 1) setPage(page - 1);
+      else setNonce((n) => n + 1);
+    } catch (err) {
+      push("error", err instanceof Error ? err.message : "Failed to delete license");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const columns = useMemo<Column<License>[]>(
@@ -112,6 +135,14 @@ export default function Licenses() {
               onClick={() => void navigate(`/licenses/${l.id}?renew=1`)}
             >
               Renew
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+              onClick={() => setDeleteTarget(l)}
+            >
+              Delete
             </Button>
           </span>
         ),
@@ -179,6 +210,21 @@ export default function Licenses() {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreated={() => setPage(1)}
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => void doDelete()}
+        title="Delete License Permanently"
+        message={
+          deleteTarget
+            ? `Permanently delete license ${deleteTarget.licenseKey} (${deleteTarget.customerName})? Its key will stop working immediately on all devices, and its devices and history will be removed. This cannot be undone — unlike Revoke, a deleted license can never be reactivated.`
+            : ""
+        }
+        confirmLabel="Delete Permanently"
+        danger
+        loading={deleting}
       />
     </div>
   );

@@ -25,6 +25,7 @@ export const revokeLicense = backend.revokeLicense;
 export const reactivateLicense = backend.reactivateLicense;
 export const renewLicense = backend.renewLicense;
 export const setMaxDevices = backend.setMaxDevices;
+export const deleteLicense = backend.deleteLicense;
 export const deactivateDevice = backend.deactivateDevice;
 export const devicesForLicense = backend.devicesForLicense;
 export const eventsForLicense = backend.eventsForLicense;

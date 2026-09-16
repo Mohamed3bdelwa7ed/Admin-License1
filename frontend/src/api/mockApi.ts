@@ -358,8 +358,7 @@ export async function setMaxDevices(id: string, maxDevices: number): Promise<Lic
   return enrich(license);
 }
 
-export async function deactivateDevice(licenseId: string, deviceId: string): Promise<void> {
-  await delay();
+export async function deactivateDevice(licenseId: string, deviceId: string): Promise<void> {  await delay();
   const device = db.devices.find((d) => d.licenseId === licenseId && d.id === deviceId);
   if (!device) throw new Error("Device not found");
   if (device.status === "deactivated") throw new Error("Device is already deactivated");
@@ -367,6 +366,16 @@ export async function deactivateDevice(licenseId: string, deviceId: string): Pro
   const license = db.licenses.find((l) => l.id === licenseId);
   if (license)
     logEvent("device_deactivated", license, `Device ${device.deviceName || device.deviceId} deactivated`);
+}
+
+/** Permanently removes a license with its devices and events. The key stops working. */
+export async function deleteLicense(id: string): Promise<void> {
+  await delay();
+  const idx = db.licenses.findIndex((l) => l.id === id);
+  if (idx === -1) throw new Error("License not found");
+  const [removed] = db.licenses.splice(idx, 1);
+  db.devices = db.devices.filter((d) => d.licenseId !== removed.id);
+  db.events = db.events.filter((e) => e.licenseId !== removed.id);
 }
 
 // ---- customers ----

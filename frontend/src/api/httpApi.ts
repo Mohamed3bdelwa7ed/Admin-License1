@@ -260,6 +260,12 @@ export async function setMaxDevices(id: string, maxDevices: number): Promise<imp
   return toLicense(l);
 }
 
+/** Permanently deletes a license with its devices and events. The key stops working. */
+export async function deleteLicense(id: string): Promise<{ id: string; licenseKey: string }> {
+  const res = await request<{ deleted: boolean; id: string; licenseKey: string }>("DELETE", `/api/v1/licenses/${id}`);
+  return { id: res.id, licenseKey: res.licenseKey };
+}
+
 // ---- devices ----
 interface ApiDevice {
   id: string;

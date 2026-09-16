@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Errors } from "../errors";
 import { daysUntil, effectiveStatusOf, endOfDay, iso, nowISO, uuid } from "../lib/dates";
-import { Customer, Device, License, type ILicense } from "../models";
+import { Customer, Device, License, LicenseEvent, type ILicense } from "../models";
 import { recordEvent } from "./events";
 
 /**
@@ -272,8 +272,23 @@ export const licensesService = {
     return toDTO(doc, active);
   },
 
-  async devices(stringId: string): Promise<DeviceDTO[]> {
+  /**
+   * Permanently deletes a license with its devices and audit events.
+   * The key can never work again afterwards: activate/validate look the
+   * key up in the database and fail closed (LICENSE_NOT_FOUND) when it
+   * is gone — there is nothing left to revoke or reactivate.
+   */
+  async remove(stringId: string): Promise<{ id: string; licenseKey: string }> {
     const doc = await getLicenseOrFail({ stringId });
+    const licenseKey = doc.key;
+    // audit events reference the license — remove them first
+    await LicenseEvent.deleteMany({ license: doc._id });
+    // document deleteOne fires the model's cascade hook (removes devices)
+    await (doc as unknown as { deleteOne(): Promise<unknown> }).deleteOne();
+    return { id: stringId, licenseKey };
+  },
+
+  async devices(stringId: string): Promise<DeviceDTO[]> {    const doc = await getLicenseOrFail({ stringId });
     const devices = await Device.find({ license: doc._id }).sort({ activatedAt: -1 });
     return devices.map(toDeviceDTO);
   },

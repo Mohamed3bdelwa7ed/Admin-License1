@@ -65,6 +65,11 @@ export function adminRoutes(deps: AdminRouteDeps): Router {
     res.json(await licensesService.setMaxDevices(p(req.params.id), (req.body as { maxDevices: number }).maxDevices, actor(req)));
   });
 
+  router.delete("/licenses/:id", async (req: Request, res: Response) => {
+    const removed = await licensesService.remove(p(req.params.id));
+    res.json({ deleted: true, ...removed });
+  });
+
   router.get("/licenses/:id/devices", async (req: Request, res: Response) => {
     res.json({ items: await licensesService.devices(p(req.params.id)) });
   });

@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   deactivateDevice,
+  deleteLicense,
   devicesForLicense,
   eventsForLicense,
   getLicense,
@@ -61,6 +62,7 @@ export default function LicenseDetails() {
   const [loading, setLoading] = useState(true);
 
   const [revokeOpen, setRevokeOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [renewOpen, setRenewOpen] = useState(false);
   const [newExpiration, setNewExpiration] = useState("");
   const [limitOpen, setLimitOpen] = useState(false);
@@ -143,8 +145,7 @@ export default function LicenseDetails() {
     }
   };
 
-  const doLimit = async () => {
-    setBusy(true);
+  const doLimit = async () => {    setBusy(true);
     try {
       await setMaxDevices(license.id, Number(newMaxDevices));
       push("success", "Device limit updated");
@@ -152,6 +153,20 @@ export default function LicenseDetails() {
       await refresh();
     } catch (err) {
       push("error", err instanceof Error ? err.message : "Failed to update device limit");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doDelete = async () => {
+    setBusy(true);
+    try {
+      await deleteLicense(license.id);
+      push("success", "License permanently deleted — its key will no longer work");
+      setDeleteOpen(false);
+      navigate("/licenses", { replace: true });
+    } catch (err) {
+      push("error", err instanceof Error ? err.message : "Failed to delete license");
     } finally {
       setBusy(false);
     }
@@ -269,6 +284,14 @@ export default function LicenseDetails() {
               </Button>
             </>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete
+          </Button>
         </div>
       </div>
 
@@ -352,6 +375,17 @@ export default function LicenseDetails() {
         title="Revoke License"
         message={`Are you sure you want to revoke this license? ${license.customerName} will no longer be able to activate or validate devices using ${license.licenseKey}. This action is logged in the audit history.`}
         confirmLabel="Revoke License"
+        danger
+        loading={busy}
+      />
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => void doDelete()}
+        title="Delete License Permanently"
+        message={`Permanently delete license ${license.licenseKey} (${license.customerName})? Its key will stop working immediately on all devices, and its devices and history will be removed. This cannot be undone — unlike Revoke, a deleted license can never be reactivated.`}
+        confirmLabel="Delete Permanently"
         danger
         loading={busy}
       />

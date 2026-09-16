@@ -12,7 +12,6 @@
  * The admin account and license defaults are always KEPT unless you use --all.
  */
 import "dotenv/config";
-import mongoose from "mongoose";
 import { connectMongo, disconnectMongo } from "../src/lib/mongo";
 import { AdminUser, AppSetting, Customer, Device, License, LicenseEvent } from "../src/models";
 

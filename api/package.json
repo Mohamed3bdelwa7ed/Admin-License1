@@ -18,6 +18,10 @@
     "migrate:sqlite": "tsx scripts/migrate-sqlite-to-mongodb.ts"
   },
   "dependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.10.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -28,9 +32,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/supertest": "^6.0.3",
     "mongodb-memory-server": "^11.2.0",
     "supertest": "^7.1.4",

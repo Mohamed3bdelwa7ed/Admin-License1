@@ -121,7 +121,7 @@ async function main(): Promise<void> {
     deviceId: "SMOKE-DEVICE-01",
     nonce: `smoke3-${Date.now()}`,
   });
-  check("POST /client/validate -> 200 signed", val.status === 200 && verifySig(publicKey, val.body.payload, val.body.signature));
+  check("POST /client/validate -> 200 signed", val.status === 200 && verifySig(publicKey, val.body.payload, val.body.signature as string));
 
   // 10. admin sees the device
   const devices = await call("GET", `/api/v1/licenses/${license!.id}/devices`, undefined, token);
@@ -139,7 +139,7 @@ async function main(): Promise<void> {
     deviceId: "SMOKE-DEVICE-01",
     nonce: `smoke4-${Date.now()}`,
   });
-  check("validate after revoke -> 403 SIGNED LICENSE_REVOKED", valAfter.status === 403 && valAfter.body.error?.code === "LICENSE_REVOKED" && verifySig(publicKey, valAfter.body.payload, valAfter.body.signature));
+  check("validate after revoke -> 403 SIGNED LICENSE_REVOKED", valAfter.status === 403 && valAfter.body.error?.code === "LICENSE_REVOKED" && verifySig(publicKey, valAfter.body.payload, valAfter.body.signature as string));
 
   console.log(failed === 0 ? "\nALL SMOKE TESTS PASSED" : `\n${failed} SMOKE TEST(S) FAILED`);
   process.exit(failed === 0 ? 0 : 1);

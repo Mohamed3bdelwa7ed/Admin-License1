@@ -27,7 +27,41 @@ export function createApp(deps: AppDeps): Express {
   app.disable("x-powered-by");
   app.set("trust proxy", 1); // for correct req.ip behind Render/Cloudflare
   app.use(express.json({ limit: "64kb" }));
-  app.use(cors({ origin: deps.corsOrigins, credentials: false }));
+
+  // ---- CORS ----
+  // - Allowlist comes from CORS_ORIGINS / FRONTEND_URL env vars (see config.ts).
+  // - credentials:true is required when the frontend sends
+  //   Authorization headers or cookies cross-origin. Note: this forbids
+  //   origin:"*", so we echo back only allowlisted origins.
+  // - The `cors` middleware answers OPTIONS preflights automatically, and
+  //   the explicit app.options() below guarantees preflights succeed even
+  //   before auth/rate-limit middleware runs.
+  const allowlist = deps.corsOrigins.map((o) => o.trim().replace(/\/+$/, "")).filter(Boolean);
+  const corsOptions: cors.CorsOptions = {
+    origin: (origin, callback) => {
+      // No Origin header (curl, Postman, server-to-server, same-origin) -> allow.
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      const normalized = origin.trim().replace(/\/+$/, "");
+      if (allowlist.includes(normalized)) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Retry-After"],
+    maxAge: 86400, // cache preflight for 24h -> fewer OPTIONS round-trips
+    optionsSuccessStatus: 204,
+  };
+  app.use(cors(corsOptions));
+  // Explicit preflight handler. Express 5 has no "*" route syntax,
+  // so a RegExp is used to match every path.
+  app.options(/.*/, cors(corsOptions));
 
   // ---- health ----
   app.get("/health", (_req: Request, res: Response) => {

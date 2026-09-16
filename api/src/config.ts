@@ -14,14 +14,30 @@ function str(name: string, fallback = ""): string {
   return process.env[name] ?? fallback;
 }
 
+function parseOrigins(value: string): string[] {
+  return value
+    .split(",")
+    .map((s) => s.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+}
+
+function resolveCorsOrigins(): string[] {
+  // Primary: CORS_ORIGINS (comma-separated, existing convention).
+  // Alias: FRONTEND_URL (single URL, common on Render/Cloudflare hosting).
+  // Both are merged + deduplicated so either env var works.
+  const fromList = parseOrigins(str("CORS_ORIGINS", ""));
+  const fromSingle = parseOrigins(str("FRONTEND_URL", ""));
+  const merged = [...fromList, ...fromSingle].filter((v, i, arr) => arr.indexOf(v) === i);
+  if (merged.length > 0) return merged;
+  // Sensible defaults: local Vite dev + production Cloudflare Workers frontend.
+  return ["http://localhost:5173", "https://admin-licensev2.jamm7498.workers.dev"];
+}
+
 export const config = {
   env: str("NODE_ENV", "development"),
   port: num("PORT", 4000),
   mongoUri: str("MONGODB_URI"),
-  corsOrigins: str("CORS_ORIGINS", "http://localhost:5173")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean),
+  corsOrigins: resolveCorsOrigins(),
   admin: {
     email: str("ADMIN_EMAIL", "admin@madar.example"),
     password: str("ADMIN_PASSWORD", ""),

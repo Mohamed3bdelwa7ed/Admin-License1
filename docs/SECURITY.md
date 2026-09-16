@@ -33,7 +33,7 @@ Madar POS (customer PC, UNTRUSTED) ──HTTPS──▶ License API
 ## Transport & headers
 
 - HTTPS in production (Render/Cloudflare Pages terminate TLS). `x-powered-by` disabled. `trust proxy` set for correct client IPs behind the platform.
-- CORS restricted to the admin frontend origins (`CORS_ORIGINS`). No credentials mode needed (bearer tokens).
+- CORS restricted to the admin frontend origins (`CORS_ORIGINS` / `FRONTEND_URL`, see `docs/CORS.md`). Credentials mode enabled (`Access-Control-Allow-Credentials: true`) with an explicit origin allowlist (never `*`) and explicit `OPTIONS` preflight handling.
 - JSON body limit 64 KB.
 
 ## Rate limiting

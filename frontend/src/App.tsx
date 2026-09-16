@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { currentAdmin } from "./api";
 import { AppLayout } from "./components/AppLayout";
+import { ThemeProvider } from "./components/Theme";
 import { ToastProvider } from "./components/Toast";
 import Activity from "./pages/Activity";
 import Customers from "./pages/Customers";
@@ -18,7 +19,8 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -40,5 +42,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ToastProvider>
+  </ThemeProvider>
   );
 }

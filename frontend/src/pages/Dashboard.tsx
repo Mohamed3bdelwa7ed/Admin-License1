@@ -74,35 +74,47 @@ export default function Dashboard() {
 
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <Card title="Expiring Licenses (next 30 days)">
+          <Card
+            title={`Expiring Licenses (next 30 days)${expiring.length > 0 ? ` — ${expiring.length}` : ""}`}
+            actions={
+              expiring.length > 0 ? (
+                <Link
+                  to="/licenses?expiring=30"
+                  className="text-xs font-medium text-primary-600 hover:underline dark:text-primary-300"
+                >
+                  View all →
+                </Link>
+              ) : undefined
+            }
+          >
             {expiring.length === 0 ? (
-              <p className="py-6 text-center text-sm text-gray-400">No licenses expiring in the next 30 days</p>
+              <p className="py-6 text-center text-sm text-gray-400 dark:text-green-100/40">No licenses expiring in the next 30 days</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                    <tr className="border-b border-gray-100 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:border-green-100/10 dark:text-green-100/50">
                       <th className="px-3 py-2">Customer</th>
                       <th className="px-3 py-2">License</th>
                       <th className="px-3 py-2">Expiration</th>
                       <th className="px-3 py-2">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                     {expiring.map((l) => {
                       const days = daysUntil(l.expirationDate);
                       return (
-                        <tr key={l.id} className="hover:bg-gray-50/70">
+                        <tr key={l.id} className="hover:bg-gray-50/70 dark:hover:bg-white/5">
                           <td className="px-3 py-2.5">
-                            <Link to={`/licenses/${l.id}`} className="font-medium text-primary-600 hover:underline">
+                            <Link to={`/licenses/${l.id}`} className="font-medium text-primary-600 hover:underline dark:text-primary-300">
                               {l.customerCompany || l.customerName}
                             </Link>
                           </td>
-                          <td className="px-3 py-2.5 font-mono text-xs text-gray-500">{l.licenseKey}</td>
+                          <td className="px-3 py-2.5 font-mono text-xs text-gray-500 dark:text-green-100/50">{l.licenseKey}</td>
                           <td className="px-3 py-2.5">
-                            <span className="text-gray-700">{formatDate(l.expirationDate)}</span>
+                            <span className="text-gray-700 dark:text-green-100/85">{formatDate(l.expirationDate)}</span>
                             <span
-                              className={`ml-2 text-xs font-medium ${days <= 7 ? "text-red-600" : "text-amber-600"}`}
+                              className={`ml-2 text-xs font-medium ${days <= 7 ? "text-red-600 dark:text-red-400" : "text-amber-600 dark:text-amber-300"}`}
                             >
                               {daysLabel(days)}
                             </span>
@@ -122,19 +134,19 @@ export default function Dashboard() {
 
         <Card title="Recent Activity">
           {events.length === 0 ? (
-            <p className="py-6 text-center text-sm text-gray-400">No activity yet</p>
+            <p className="py-6 text-center text-sm text-gray-400 dark:text-green-100/40">No activity yet</p>
           ) : (
             <ul className="space-y-1">
               {events.map((e) => (
-                <li key={e.id} className="flex items-start gap-3 rounded-md px-2 py-2 hover:bg-gray-50">
-                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+                <li key={e.id} className="flex items-start gap-3 rounded-md px-2 py-2 hover:bg-gray-50 dark:hover:bg-white/5">
+                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-300">
                     <CheckCircle2 size={13} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm leading-snug text-gray-800">
+                    <p className="text-sm leading-snug text-gray-800 dark:text-green-100/90">
                       <span className="font-medium">{eventLabels[e.type] ?? e.type}</span> — {e.message}
                     </p>
-                    <p className="mt-0.5 text-xs text-gray-400">
+                    <p className="mt-0.5 text-xs text-gray-400 dark:text-green-100/40">
                       {e.adminName} · {relativeTime(e.createdAt)}
                     </p>
                   </div>

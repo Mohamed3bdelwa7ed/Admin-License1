@@ -21,12 +21,12 @@ const nav = [
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <div className="flex h-full w-60 flex-col border-r border-gray-200 bg-white">
-      <div className="flex h-14 items-center gap-2.5 border-b border-gray-100 px-5">
+    <div className="flex h-full w-60 flex-col border-r border-gray-200 bg-white dark:border-green-100/10 dark:bg-night-900">
+      <div className="flex h-14 items-center gap-2.5 border-b border-gray-100 px-5 dark:border-green-100/10">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-600 text-sm font-bold text-white">
           M
         </div>
-        <span className="text-[15px] font-semibold tracking-tight text-gray-900">Madar License</span>
+        <span className="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-green-50">Madar License</span>
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto p-3">
@@ -39,8 +39,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-primary-50 text-primary-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-200"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-green-100/60 dark:hover:bg-white/5 dark:hover:text-green-50"
               }`
             }
           >
@@ -50,14 +50,14 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="border-t border-gray-100 p-3">
+      <div className="border-t border-gray-100 p-3 dark:border-green-100/10">
         <button
           type="button"
           onClick={() => {
             logout();
             window.location.href = "/login";
           }}
-          className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+          className="flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-green-100/60 dark:hover:bg-white/5 dark:hover:text-green-50"
         >
           <LogOut size={17} />
           Logout

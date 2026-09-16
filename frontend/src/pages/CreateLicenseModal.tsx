@@ -117,19 +117,19 @@ export default function CreateLicenseModal({
         }
       >
         <div className="flex flex-col items-center gap-4 py-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-100 text-green-600">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-300">
             <Check size={22} />
           </div>
-          <p className="text-sm text-gray-500">
-            License for <span className="font-medium text-gray-800">{created.customerCompany || created.customerName}</span>{" "}
+          <p className="text-sm text-gray-500 dark:text-green-100/60">
+            License for <span className="font-medium text-gray-800 dark:text-green-100">{created.customerCompany || created.customerName}</span>{" "}
             was created. Provide this key to the customer:
           </p>
-          <div className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-center">
-            <p className="font-mono text-lg font-semibold tracking-wide text-gray-900 select-all">
+          <div className="w-full rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-center dark:border-green-100/10 dark:bg-white/5">
+            <p className="font-mono text-lg font-semibold tracking-wide text-gray-900 select-all dark:text-green-50">
               {created.licenseKey}
             </p>
           </div>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 dark:text-green-100/40">
             This key is shown once here. Copy it now — it is displayed in full only on the license details page for admins.
           </p>
           <Button icon={copied ? <Check size={15} /> : <Copy size={15} />} onClick={() => void copyKey()} className="w-full">
@@ -165,7 +165,7 @@ export default function CreateLicenseModal({
         }}
       >
         <fieldset>
-          <legend className="mb-2.5 text-sm font-semibold text-gray-900">Customer</legend>
+          <legend className="mb-2.5 text-sm font-semibold text-gray-900 dark:text-green-50">Customer</legend>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               label="Customer Name"
@@ -198,7 +198,7 @@ export default function CreateLicenseModal({
         </fieldset>
 
         <fieldset>
-          <legend className="mb-2.5 text-sm font-semibold text-gray-900">License</legend>
+          <legend className="mb-2.5 text-sm font-semibold text-gray-900 dark:text-green-50">License</legend>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Input
               label="Start Date"
@@ -231,7 +231,7 @@ export default function CreateLicenseModal({
             placeholder="Optional internal notes..."
           />
         </fieldset>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 dark:text-green-100/40">
           The license key is generated securely by the server and will be shown once after creation.
         </p>
         <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />

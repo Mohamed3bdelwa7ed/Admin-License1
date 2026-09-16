@@ -1,6 +1,6 @@
 import { Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { listLicenses, type LicenseListResult } from "../api";
 import { LicenseStatusBadge } from "../components/Badge";
 import { Button } from "../components/Button";
@@ -13,13 +13,23 @@ import CreateLicenseModal from "./CreateLicenseModal";
 
 export default function Licenses() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [result, setResult] = useState<LicenseListResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  // deep-linkable filters: /licenses?search=Acme and /licenses?expiring=30
+  // (used by Customers "View Licenses" and the dashboard expiring card)
+  const [search, setSearch] = useState(() => params.get("search") ?? "");
   const [status, setStatus] = useState<"all" | License["status"]>("all");
-  const [expiring, setExpiring] = useState<"any" | "30">("any");
+  const [expiring, setExpiring] = useState<"any" | "30">(() => (params.get("expiring") === "30" ? "30" : "any"));
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+
+  // re-apply URL filters when navigating here with different params
+  useEffect(() => {
+    setSearch(params.get("search") ?? "");
+    setExpiring(params.get("expiring") === "30" ? "30" : "any");
+    setPage(1);
+  }, [params]);
 
   useEffect(() => {
     setLoading(true);
@@ -62,8 +72,8 @@ export default function Licenses() {
         header: "Customer",
         render: (l) => (
           <div>
-            <p className="font-medium text-gray-800">{l.customerName}</p>
-            <p className="text-xs text-gray-400">{l.customerCompany}</p>
+            <p className="font-medium text-gray-800 dark:text-green-50">{l.customerName}</p>
+            <p className="text-xs text-gray-400 dark:text-green-100/40">{l.customerCompany}</p>
           </div>
         ),
       },
@@ -81,7 +91,7 @@ export default function Licenses() {
         key: "devices",
         header: "Devices",
         render: (l) => (
-          <span className="text-gray-700">
+          <span className="text-gray-700 dark:text-green-100/85">
             {l.activeDevices} / {l.maxDevices}
           </span>
         ),
@@ -124,13 +134,13 @@ export default function Licenses() {
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative">
-          <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-green-100/40" />
           <input
             type="text"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search key, customer, company..."
-            className="h-9.5 w-72 rounded-md border border-gray-300 bg-white pr-3 pl-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none"
+            className="h-9.5 w-72 rounded-md border border-gray-300 bg-white pr-3 pl-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-green-50 dark:placeholder:text-green-100/30 dark:focus:border-primary-400 dark:focus:ring-primary-500/20"
           />
         </div>
         <Select value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPage(1); }} className="w-40">

@@ -41,17 +41,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             role="status"
             className={`pointer-events-auto flex items-start justify-between gap-3 rounded-md border px-3.5 py-2.5 text-sm shadow-md ${
               t.kind === "success"
-                ? "border-green-200 bg-green-50 text-green-800"
+                ? "border-green-200 bg-green-50 text-green-800 dark:border-green-500/30 dark:bg-green-950 dark:text-green-200"
                 : t.kind === "error"
-                  ? "border-red-200 bg-red-50 text-red-800"
-                  : "border-gray-200 bg-white text-gray-800"
+                  ? "border-red-200 bg-red-50 text-red-800 dark:border-red-500/30 dark:bg-red-950 dark:text-red-200"
+                  : "border-gray-200 bg-white text-gray-800 dark:border-green-100/15 dark:bg-night-800 dark:text-green-100"
             }`}
           >
             <span>{t.message}</span>
             <button
               type="button"
               aria-label="Dismiss"
-              className="shrink-0 text-gray-400 hover:text-gray-600"
+              className="shrink-0 text-gray-400 hover:text-gray-600 dark:text-green-100/40 dark:hover:text-green-100"
               onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
             >
               <X size={14} />

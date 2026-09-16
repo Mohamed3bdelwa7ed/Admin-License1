@@ -64,13 +64,13 @@ export default function Settings() {
     <div className="max-w-2xl space-y-4">
       <Card title="Admin Profile">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-700 dark:bg-primary-500/15 dark:text-primary-200">
             {admin?.name.charAt(0) ?? "A"}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{admin?.name}</p>
-            <p className="text-xs text-gray-500">{admin?.email}</p>
-            <p className="mt-0.5 text-xs text-gray-400 capitalize">{admin?.role}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-green-50">{admin?.name}</p>
+            <p className="text-xs text-gray-500 dark:text-green-100/50">{admin?.email}</p>
+            <p className="mt-0.5 text-xs text-gray-400 capitalize dark:text-green-100/40">{admin?.role}</p>
           </div>
         </div>
       </Card>
@@ -161,7 +161,7 @@ export default function Settings() {
             </div>
           </div>
         ) : (
-          <div className="h-24 animate-pulse rounded-md bg-gray-100" />
+          <div className="h-24 animate-pulse rounded-md bg-gray-100 dark:bg-white/10" />
         )}
       </Card>
     </div>

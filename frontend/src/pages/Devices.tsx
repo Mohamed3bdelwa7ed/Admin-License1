@@ -5,8 +5,9 @@ import { listDevices, type DeviceRow } from "../api";
 import { DeviceStatusBadge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { Select } from "../components/forms";
-import { Table, type Column } from "../components/Table";
+import { Pagination, Table, type Column } from "../components/Table";
 import { PageHeader } from "../components/ui";
+import { usePagination } from "../hooks/usePagination";
 import { formatDateTime } from "../utils/format";
 
 export default function Devices() {
@@ -14,6 +15,7 @@ export default function Devices() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "deactivated">("all");
+  const { page, setPage, total, totalPages, perPage, items } = usePagination(rows, 8);
 
   useEffect(() => {
     setLoading(true);
@@ -32,8 +34,8 @@ export default function Devices() {
       header: "Device ID",
       render: (d) => (
         <div>
-          <p className="font-mono text-xs font-medium text-gray-800">{d.deviceId}</p>
-          <p className="text-xs text-gray-400">{d.deviceName}</p>
+          <p className="font-mono text-xs font-medium text-gray-800 dark:text-green-50">{d.deviceId}</p>
+          <p className="text-xs text-gray-400 dark:text-green-100/40">{d.deviceName}</p>
         </div>
       ),
     },
@@ -42,8 +44,8 @@ export default function Devices() {
       header: "Customer",
       render: (d) => (
         <div>
-          <p className="font-medium text-gray-800">{d.customerName}</p>
-          <p className="text-xs text-gray-400">{d.customerCompany}</p>
+          <p className="font-medium text-gray-800 dark:text-green-50">{d.customerName}</p>
+          <p className="text-xs text-gray-400 dark:text-green-100/40">{d.customerCompany}</p>
         </div>
       ),
     },
@@ -76,20 +78,20 @@ export default function Devices() {
 
   return (
     <div>
-      <PageHeader title="Devices" subtitle={`${rows.length} device activations`} />
+      <PageHeader title="Devices" subtitle={`${total} device activations`} />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="relative">
-          <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 dark:text-green-100/40" />
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search device, customer, license..."
-            className="h-9.5 w-72 rounded-md border border-gray-300 bg-white pr-3 pl-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none"
+            className="h-9.5 w-72 rounded-md border border-gray-300 bg-white pr-3 pl-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-green-50 dark:placeholder:text-green-100/30 dark:focus:border-primary-400 dark:focus:ring-primary-500/20"
           />
         </div>
-        <Select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className="w-40">
+        <Select value={status} onChange={(e) => { setStatus(e.target.value as typeof status); setPage(1); }} className="w-40">
           <option value="all">All statuses</option>
           <option value="active">Active</option>
           <option value="deactivated">Deactivated</option>
@@ -98,12 +100,16 @@ export default function Devices() {
 
       <Table
         columns={columns}
-        rows={rows}
+        rows={items}
         rowKey={(d) => d.id}
         loading={loading}
         emptyMessage="No devices found"
         emptyHint="Devices appear here after the Madar POS client activates a license."
       />
+
+      {totalPages > 1 && (
+        <Pagination page={page} totalPages={totalPages} total={total} perPage={perPage} onChange={setPage} />
+      )}
     </div>
   );
 }

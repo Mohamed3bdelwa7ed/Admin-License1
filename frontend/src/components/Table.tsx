@@ -19,27 +19,27 @@ interface TableProps<T> {
 
 export function Table<T>({ columns, rows, rowKey, emptyMessage = "Nothing here yet", emptyHint, loading }: TableProps<T>) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm dark:border-green-100/10 dark:bg-night-900">
       <table className="w-full min-w-160 text-left text-sm">
         <thead>
-          <tr className="border-b border-gray-200 bg-gray-50/80">
+          <tr className="border-b border-gray-200 bg-gray-50/80 dark:border-green-100/10 dark:bg-white/5">
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase ${col.headerClassName ?? ""}`}
+                className={`px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-green-100/50 ${col.headerClassName ?? ""}`}
               >
                 {col.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => (
               <tr key={i}>
                 {columns.map((col) => (
                   <td key={col.key} className="px-4 py-3.5">
-                    <div className="h-4 w-3/4 animate-pulse rounded bg-gray-100" />
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-gray-100 dark:bg-white/10" />
                   </td>
                 ))}
               </tr>
@@ -47,15 +47,15 @@ export function Table<T>({ columns, rows, rowKey, emptyMessage = "Nothing here y
           ) : rows.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="px-4 py-12 text-center">
-                <p className="text-sm font-medium text-gray-500">{emptyMessage}</p>
-                {emptyHint && <p className="mt-1 text-xs text-gray-400">{emptyHint}</p>}
+                <p className="text-sm font-medium text-gray-500 dark:text-green-100/60">{emptyMessage}</p>
+                {emptyHint && <p className="mt-1 text-xs text-gray-400 dark:text-green-100/40">{emptyHint}</p>}
               </td>
             </tr>
           ) : (
             rows.map((row) => (
-              <tr key={rowKey(row)} className="transition-colors hover:bg-gray-50/70">
+              <tr key={rowKey(row)} className="transition-colors hover:bg-gray-50/70 dark:hover:bg-white/5">
                 {columns.map((col) => (
-                  <td key={col.key} className={`px-4 py-3 text-gray-700 ${col.className ?? ""}`}>
+                  <td key={col.key} className={`px-4 py-3 text-gray-700 dark:text-green-100/85 ${col.className ?? ""}`}>
                     {col.render(row)}
                   </td>
                 ))}
@@ -81,14 +81,14 @@ export function Pagination({ page, totalPages, total, perPage, onChange }: Pagin
   const to = Math.min(page * perPage, total);
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-      <p className="text-xs text-gray-500">
-        Showing <span className="font-medium text-gray-700">{from}–{to}</span> of{" "}
-        <span className="font-medium text-gray-700">{total}</span>
+      <p className="text-xs text-gray-500 dark:text-green-100/50">
+        Showing <span className="font-medium text-gray-700 dark:text-green-100">{from}–{to}</span> of{" "}
+        <span className="font-medium text-gray-700 dark:text-green-100">{total}</span>
       </p>
       <div className="flex items-center gap-1.5">
         <button
           type="button"
-          className="h-8 cursor-pointer rounded-md border border-gray-300 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
+          className="h-8 cursor-pointer rounded-md border border-gray-300 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 dark:border-white/15 dark:text-green-100/80 dark:hover:bg-white/10 dark:disabled:text-green-100/25"
           disabled={page <= 1}
           onClick={() => onChange(page - 1)}
         >
@@ -96,7 +96,7 @@ export function Pagination({ page, totalPages, total, perPage, onChange }: Pagin
         </button>
         <button
           type="button"
-          className="h-8 cursor-pointer rounded-md border border-gray-300 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
+          className="h-8 cursor-pointer rounded-md border border-gray-300 px-3 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300 dark:border-white/15 dark:text-green-100/80 dark:hover:bg-white/10 dark:disabled:text-green-100/25"
           disabled={page >= totalPages}
           onClick={() => onChange(page + 1)}
         >

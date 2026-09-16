@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc --noEmit",
+    "build": "tsc --noEmit -p tsconfig.build.json",
     "start": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -29,13 +29,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.9.4",
     "tsx": "^4.20.6",
+    "typescript": "~5.9.2",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@types/supertest": "^6.0.3",
     "mongodb-memory-server": "^11.2.0",
     "supertest": "^7.1.4",
-    "typescript": "~5.9.2",
     "vitest": "^3.2.4"
   }
 }
